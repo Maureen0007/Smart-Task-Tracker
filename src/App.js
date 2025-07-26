@@ -4,6 +4,8 @@ import './App.css';
 function App() {
   const [task, setTask] = useState('');
   const [tasks, setTasks] = useState([]);
+  const [filter, setFilter] = useState('all');
+
 // Function to handle adding a new task
   const handleAddTask = () => {
     if (task.trim() === '') return;
@@ -30,6 +32,13 @@ function App() {
     );
   };
 
+  // Function to filter tasks based on completion status
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === 'active') return !task.completed;
+    if (filter === 'completed') return task.completed;
+    return true; // 'all' filter
+  });
+
   return (
     <div className="app-container">
       <h1>Smart Task Tracker</h1>
@@ -45,20 +54,27 @@ function App() {
       </div>
 
       <ul className="task-list">
-        {tasks.map((t) => (
-          <li key={t.id} className={`task-item ${t.completed ? 'completed' : ''}`}>
-            <span className="task-text" onClick={() => toggleComplete(t.id)}>
-              {t.text}
+        {filteredTasks.map((task) => (
+          <li key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
+            <span className="task-text" onClick={() => toggleComplete(task.id)}>
+              {task.text}
             </span>
-            <button className="delete-btn" onClick={() => handleDelete(t.id)}>🗑</button>
+            <button className="delete-btn" onClick={() => handleDelete(task.id)}>🗑</button>
           </li>
         ))}
       </ul>
 
       <div className="filters">
-        <button>Active</button>
-        <button>Completed</button>
-        <button>All</button>
+        <button className={filter === 'active' ? 'selected' : ''}
+          onClick={() => setFilter('active')}>Active
+          </button>
+          
+        <button className={filter === 'completed' ? 'selected' : ''}
+          onClick={() => setFilter('completed')}>Completed
+          </button>
+        <button className={filter === 'all' ? 'selected' : ''}
+          onClick={() => setFilter('all')}>All
+          </button>
       </div>
     </div>
   );

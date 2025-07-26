@@ -1,0 +1,33 @@
+.task-item.completed {
+  background-color: #e0e0e0;
+  text-decoration: line-through;
+  color: gray;
+  opacity: 0.7;
+};
+
+/* filters */
+.filters {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.filters button {
+  padding: 6px 14px;
+  border: 1px solid black;
+  background-color: white;
+  color: black;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.filters button:hover {
+  background-color: #f0f0f0;
+}
+
+.filters button.selected {
+  background-color: black;
+  color: white;
+}
