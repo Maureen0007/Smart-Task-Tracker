@@ -2,24 +2,31 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
+  const [darkMode, setDarkMode] = useState(false);
   const [task, setTask] = useState('');
   const [tasks, setTasks] = useState(() => {
-  const saved = localStorage.getItem('tasks');
-  return saved ? JSON.parse(saved) : [];
-});
+    const saved = localStorage.getItem('tasks');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [filter, setFilter] = useState('all');
 
+  // Load dark mode from localStorage
+  useEffect(() => {
+    const savedMode = localStorage.getItem("darkMode") === "true";
+    setDarkMode(savedMode);
+  }, []);
 
-// Save to localStorage
-useEffect(() => {
-  localStorage.setItem('tasks', JSON.stringify(tasks));
-}, [tasks]);
+  // Save dark mode to localStorage
+  useEffect(() => {
+    localStorage.setItem("darkMode", darkMode);
+  }, [darkMode]);
 
+  // Save tasks to localStorage
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
-
-
-
-  // 📦 Add a new task
+  // Add new task
   const handleAddTask = () => {
     if (task.trim() === '') return;
 
@@ -29,17 +36,16 @@ useEffect(() => {
       completed: false,
     };
 
-// 📝 Update state and clear input
     setTasks([...tasks, newTask]);
     setTask('');
   };
 
-// 🗑️ Delete a task
+  // Delete task
   const handleDelete = (id) => {
     setTasks(tasks.filter((t) => t.id !== id));
   };
 
-// ✅ Toggle task completion
+  // Toggle complete
   const toggleComplete = (id) => {
     setTasks(
       tasks.map((t) =>
@@ -48,7 +54,7 @@ useEffect(() => {
     );
   };
 
-  // 🔍 Filter tasks based on the selected filter
+  // Filter tasks
   const filteredTasks = tasks.filter((t) => {
     if (filter === 'active') return !t.completed;
     if (filter === 'completed') return t.completed;
@@ -56,7 +62,11 @@ useEffect(() => {
   });
 
   return (
-    <div className="app-container">
+    <div className={`app-container ${darkMode ? "dark" : ""}`}>
+      <button onClick={() => setDarkMode(!darkMode)} className="toggle-mode">
+        {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+      </button>
+
       <h1>Smart Task Tracker</h1>
 
       <div className="task-input">
