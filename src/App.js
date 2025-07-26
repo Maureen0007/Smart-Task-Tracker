@@ -1,42 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
   const [task, setTask] = useState('');
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(() => {
+  const saved = localStorage.getItem('tasks');
+  return saved ? JSON.parse(saved) : [];
+});
   const [filter, setFilter] = useState('all');
 
-// Function to handle adding a new task
+
+// Save to localStorage
+useEffect(() => {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}, [tasks]);
+
+
+
+
+
+  // 📦 Add a new task
   const handleAddTask = () => {
     if (task.trim() === '') return;
 
     const newTask = {
       id: Date.now(),
       text: task,
-      completed: false
+      completed: false,
     };
-// Add the new task to the tasks array
+
+// 📝 Update state and clear input
     setTasks([...tasks, newTask]);
     setTask('');
   };
-// Function to handle task deletion
+
+// 🗑️ Delete a task
   const handleDelete = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+    setTasks(tasks.filter((t) => t.id !== id));
   };
-// Function to toggle task completion status
+
+// ✅ Toggle task completion
   const toggleComplete = (id) => {
     setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
+      tasks.map((t) =>
+        t.id === id ? { ...t, completed: !t.completed } : t
       )
     );
   };
 
-  // Function to filter tasks based on completion status
-  const filteredTasks = tasks.filter((task) => {
-    if (filter === 'active') return !task.completed;
-    if (filter === 'completed') return task.completed;
-    return true; // 'all' filter
+  // 🔍 Filter tasks based on the selected filter
+  const filteredTasks = tasks.filter((t) => {
+    if (filter === 'active') return !t.completed;
+    if (filter === 'completed') return t.completed;
+    return true;
   });
 
   return (
@@ -54,27 +70,37 @@ function App() {
       </div>
 
       <ul className="task-list">
-        {filteredTasks.map((task) => (
-          <li key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
-            <span className="task-text" onClick={() => toggleComplete(task.id)}>
-              {task.text}
+        {filteredTasks.map((t) => (
+          <li key={t.id} className={`task-item ${t.completed ? 'completed' : ''}`}>
+            <span className="task-text" onClick={() => toggleComplete(t.id)}>
+              {t.text}
             </span>
-            <button className="delete-btn" onClick={() => handleDelete(task.id)}>🗑</button>
+            <button className="delete-btn" onClick={() => handleDelete(t.id)}>
+              🗑
+            </button>
           </li>
         ))}
       </ul>
 
       <div className="filters">
-        <button className={filter === 'active' ? 'selected' : ''}
-          onClick={() => setFilter('active')}>Active
-          </button>
-          
-        <button className={filter === 'completed' ? 'selected' : ''}
-          onClick={() => setFilter('completed')}>Completed
-          </button>
-        <button className={filter === 'all' ? 'selected' : ''}
-          onClick={() => setFilter('all')}>All
-          </button>
+        <button
+          className={filter === 'active' ? 'selected' : ''}
+          onClick={() => setFilter('active')}
+        >
+          Active
+        </button>
+        <button
+          className={filter === 'completed' ? 'selected' : ''}
+          onClick={() => setFilter('completed')}
+        >
+          Completed
+        </button>
+        <button
+          className={filter === 'all' ? 'selected' : ''}
+          onClick={() => setFilter('all')}
+        >
+          All
+        </button>
       </div>
     </div>
   );
